@@ -458,66 +458,69 @@ export function NeuralNetworkViz() {
   ]
 
   return (
-    <div className="fixed bottom-20 right-8 w-48 h-32 pointer-events-none z-10 opacity-30">
-      <svg width="100%" height="100%" viewBox="0 0 200 100">
-        {/* Connections - draw lines between layers */}
-        {layers[0].map(n1 => 
-          layers[1].map(n2 => (
-            <line
-              key={`${n1.id}-${n2.id}`}
-              x1="30" y1={n1.y}
-              x2="100" y2={n2.y}
-              stroke="#22d3ee"
-              strokeWidth="0.5"
-              opacity="0.3"
-              className="neural-pulse"
-              style={{ animationDelay: `${(n1.id + n2.id) * 0.1}s` }}
-            />
-          ))
-        )}
-        {layers[1].map(n1 => 
-          layers[2].map(n2 => (
-            <line
-              key={`${n1.id}-${n2.id}`}
-              x1="100" y1={n1.y}
-              x2="170" y2={n2.y}
-              stroke="#4ade80"
-              strokeWidth="0.5"
-              opacity="0.3"
-              className="neural-pulse"
-              style={{ animationDelay: `${(n1.id + n2.id) * 0.1 + 0.5}s` }}
-            />
-          ))
-        )}
+    <div className="fixed bottom-24 right-4 z-20 pointer-events-none">
+      <div className="bg-background/80 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-2">
+        <div className="text-cyan-400 font-mono text-[10px] mb-1 font-bold">NEURAL NET</div>
+        <svg width="180" height="90" viewBox="0 0 200 100">
+          {/* Connections - draw lines between layers */}
+          {layers[0].map(n1 => 
+            layers[1].map(n2 => (
+              <line
+                key={`${n1.id}-${n2.id}`}
+                x1="30" y1={n1.y}
+                x2="100" y2={n2.y}
+                stroke="#22d3ee"
+                strokeWidth="0.5"
+                opacity="0.4"
+                className="neural-pulse"
+                style={{ animationDelay: `${(n1.id + n2.id) * 0.1}s` }}
+              />
+            ))
+          )}
+          {layers[1].map(n1 => 
+            layers[2].map(n2 => (
+              <line
+                key={`${n1.id}-${n2.id}`}
+                x1="100" y1={n1.y}
+                x2="170" y2={n2.y}
+                stroke="#4ade80"
+                strokeWidth="0.5"
+                opacity="0.4"
+                className="neural-pulse"
+                style={{ animationDelay: `${(n1.id + n2.id) * 0.1 + 0.5}s` }}
+              />
+            ))
+          )}
+          
+          {/* Nodes */}
+          {layers[0].map(n => (
+            <circle key={n.id} cx="30" cy={n.y} r="4" fill="#22d3ee" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+          ))}
+          {layers[1].map(n => (
+            <circle key={n.id} cx="100" cy={n.y} r="5" fill="#a78bfa" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+          ))}
+          {layers[2].map(n => (
+            <circle key={n.id} cx="170" cy={n.y} r="4" fill="#4ade80" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+          ))}
+        </svg>
         
-        {/* Nodes */}
-        {layers[0].map(n => (
-          <circle key={n.id} cx="30" cy={n.y} r="4" fill="#22d3ee" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
-        ))}
-        {layers[1].map(n => (
-          <circle key={n.id} cx="100" cy={n.y} r="5" fill="#a78bfa" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
-        ))}
-        {layers[2].map(n => (
-          <circle key={n.id} cx="170" cy={n.y} r="4" fill="#4ade80" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
-        ))}
-      </svg>
-      
-      <style>{`
-        .neural-node {
-          animation: nodePulse 2s ease-in-out infinite;
-        }
-        .neural-pulse {
-          animation: linePulse 3s ease-in-out infinite;
-        }
-        @keyframes nodePulse {
-          0%, 100% { opacity: 0.4; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        @keyframes linePulse {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.6; }
-        }
-      `}</style>
+        <style>{`
+          .neural-node {
+            animation: nodePulse 2s ease-in-out infinite;
+          }
+          .neural-pulse {
+            animation: linePulse 3s ease-in-out infinite;
+          }
+          @keyframes nodePulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes linePulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+          }
+        `}</style>
+      </div>
     </div>
   )
 }
@@ -819,7 +822,7 @@ export function CorrelationMatrix() {
   }
 
   return (
-    <div className="fixed top-64 left-4 z-20 pointer-events-none hidden lg:block">
+    <div className="fixed top-64 left-4 z-20 pointer-events-none">
       <div className="bg-background/80 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2">
         <div className="text-cyan-400 font-mono text-[10px] mb-2 font-bold">CORRELATION ρ</div>
         
@@ -887,7 +890,7 @@ export function CodeTerminal() {
   }, [])
 
   return (
-    <div className="fixed bottom-4 left-4 z-20 pointer-events-none hidden md:block">
+    <div className="fixed bottom-4 left-4 z-20 pointer-events-none">
       <div className="bg-background/90 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2 w-64 font-mono text-[10px]">
         <div className="flex items-center gap-2 mb-2">
           <div className="flex gap-1">
