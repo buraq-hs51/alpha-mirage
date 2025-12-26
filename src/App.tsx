@@ -7,35 +7,36 @@ import { Education } from "@/components/Education"
 import { Skills } from "@/components/Skills"
 import { Contact } from "@/components/Contact"
 import { Toaster } from "@/components/ui/sonner"
-import { InteractiveCursor, StockTicker, MatrixRain } from "@/components/InteractiveEffects"
+import InteractiveEffects from "@/components/InteractiveEffects"
 
 function App() {
   return (
     <div className="min-h-screen cursor-none">
-      {/* Interactive Effects */}
-      <InteractiveCursor />
-      <StockTicker />
-      <MatrixRain />
+      {/* Background Interactive Effects */}
+      <InteractiveEffects />
       
-      <Navigation />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Education />
-      <Contact />
-      
-      <footer className="py-8 px-6 border-t border-border/30 bg-secondary/20">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-sm text-muted-foreground mb-2">
-            © {new Date().getFullYear()} Shadaab Ahmed. Quantitative Developer & Financial Engineer.
-          </p>
-          <p className="text-xs text-muted-foreground/60">
-            Built with React, TypeScript & Tailwind CSS
-          </p>
-        </div>
-      </footer>
+      {/* Main Content */}
+      <div className="relative">
+        <Navigation />
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Education />
+        <Contact />
+        
+        <footer className="py-8 px-6 border-t border-border/30 bg-secondary/20">
+          <div className="max-w-6xl mx-auto text-center">
+            <p className="text-sm text-muted-foreground mb-2">
+              © {new Date().getFullYear()} Shadaab Ahmed. Quantitative Developer & Financial Engineer.
+            </p>
+            <p className="text-xs text-muted-foreground/60">
+              Built with React, TypeScript & Tailwind CSS
+            </p>
+          </div>
+        </footer>
+      </div>
 
       <Toaster />
     </div>
