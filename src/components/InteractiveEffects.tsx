@@ -31,235 +31,143 @@ const codeSnippets = [
   "FPGA",
 ]
 
-// Stock data
-const stockSymbols = [
-  { symbol: "AAPL", price: 189.45, change: 2.34 },
-  { symbol: "GOOGL", price: 141.23, change: -1.12 },
-  { symbol: "MSFT", price: 378.91, change: 4.56 },
-  { symbol: "NVDA", price: 495.22, change: 12.45 },
-  { symbol: "TSLA", price: 248.34, change: 5.67 },
-  { symbol: "BTC", price: 43521.00, change: 1234.56 },
-  { symbol: "ETH", price: 2245.00, change: -45.67 },
-  { symbol: "SPY", price: 475.23, change: 3.21 },
-  { symbol: "QQQ", price: 405.67, change: 2.89 },
-  { symbol: "META", price: 356.78, change: -2.34 },
-]
+import { fetchAllMarketData, marketDataStream, type MarketQuote } from '../services/marketData'
 
 // ============================================
 // ENHANCED CURSOR WITH PARTICLE TRAIL
 // ============================================
 export function InteractiveCursor() {
-  const [particles, setParticles] = useState<Array<{
-    id: number
-    x: number
-    y: number
-    snippet?: string
-    type: 'glow' | 'spark' | 'code'
-  }>>([])
-  const lastPos = useRef({ x: 0, y: 0 })
-  const particleId = useRef(0)
-  const throttleRef = useRef(0)
-
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
   
-  // Optimized spring config - stiffer = faster response
-  const springConfig = { stiffness: 500, damping: 30 }
+  // Simplified spring config for faster response
+  const springConfig = { stiffness: 800, damping: 35 }
   const springX = useSpring(cursorX, springConfig)
   const springY = useSpring(cursorY, springConfig)
 
-  // Reduced to 2 trail positions (from 3)
-  const trail1X = useSpring(cursorX, { stiffness: 150, damping: 22 })
-  const trail1Y = useSpring(cursorY, { stiffness: 150, damping: 22 })
-  const trail2X = useSpring(cursorX, { stiffness: 60, damping: 18 })
-  const trail2Y = useSpring(cursorY, { stiffness: 60, damping: 18 })
+  // Single trail for performance
+  const trailX = useSpring(cursorX, { stiffness: 200, damping: 25 })
+  const trailY = useSpring(cursorY, { stiffness: 200, damping: 25 })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      const now = Date.now()
-      // Throttle particle creation to 60fps max
-      const shouldSpawnParticle = now - throttleRef.current > 16
-      
-      const newX = e.clientX
-      const newY = e.clientY
-      
-      cursorX.set(newX)
-      cursorY.set(newY)
-      
-      if (shouldSpawnParticle) {
-        // Calculate velocity
-        const vx = newX - lastPos.current.x
-        const vy = newY - lastPos.current.y
-        const speed = Math.sqrt(vx * vx + vy * vy)
-        
-        // Spawn particles based on speed - max 2 particles
-        if (speed > 8) {
-          const numParticles = Math.min(Math.floor(speed / 15), 2)
-          const newParticles: Array<{
-            id: number
-            x: number
-            y: number
-            snippet?: string
-            type: 'glow' | 'spark' | 'code'
-          }> = []
-          
-          for (let i = 0; i < numParticles; i++) {
-            const type: 'glow' | 'spark' | 'code' = Math.random() > 0.7 ? 'code' : (Math.random() > 0.5 ? 'spark' : 'glow')
-            newParticles.push({
-              id: particleId.current++,
-              x: newX + (Math.random() - 0.5) * 40,
-              y: newY + (Math.random() - 0.5) * 40,
-              snippet: type === 'code' ? codeSnippets[Math.floor(Math.random() * codeSnippets.length)] : undefined,
-              type
-            })
-          }
-          
-          // Limit to 12 particles max (from 20)
-          setParticles(prev => [...prev.slice(-10), ...newParticles])
-          throttleRef.current = now
-        }
-        
-        lastPos.current = { x: newX, y: newY }
-      }
+      cursorX.set(e.clientX)
+      cursorY.set(e.clientY)
     }
 
-    // Passive listener for better scroll performance
     window.addEventListener("mousemove", handleMouseMove, { passive: true })
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [cursorX, cursorY])
-
-  // Cleanup old particles - less frequent
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setParticles(prev => prev.slice(-8))
-    }, 1500)
-    return () => clearInterval(interval)
-  }, [])
 
   // Only show on desktop
   if (typeof window !== 'undefined' && window.innerWidth < 768) return null
 
   return (
     <>
-      {/* Ambient glow - simplified, using trail2 instead of trail3 */}
+      {/* Simple glow trail */}
       <motion.div
         className="fixed pointer-events-none z-40 will-change-transform"
         style={{
-          x: trail2X,
-          y: trail2Y,
-          translateX: "-50%",
-          translateY: "-50%",
+          x: trailX,
+          y: trailY,
+          translateX: '-50%',
+          translateY: '-50%',
         }}
       >
         <div 
-          className="w-[400px] h-[400px] rounded-full"
+          className="w-8 h-8 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%)',
-            filter: 'blur(40px)',
+            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.15) 0%, transparent 70%)',
           }}
         />
       </motion.div>
 
-      {/* Secondary glow ring - removed expensive animation */}
-      <motion.div
-        className="fixed pointer-events-none z-40 will-change-transform"
-        style={{
-          x: trail1X,
-          y: trail1Y,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
-      >
-        <div 
-          className="w-[150px] h-[150px] rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, transparent 70%)',
-            filter: 'blur(15px)',
-          }}
-        />
-      </motion.div>
-
-      {/* Main cursor core */}
+      {/* Main cursor */}
       <motion.div
         className="fixed pointer-events-none z-50 will-change-transform"
         style={{
           x: springX,
           y: springY,
-          translateX: "-50%",
-          translateY: "-50%",
+          translateX: '-50%',
+          translateY: '-50%',
         }}
       >
-        {/* Rotating ring - CSS animation instead of framer */}
-        <div
-          className="absolute w-8 h-8 -left-4 -top-4 rounded-full border border-cyan-400/40"
-          style={{ animation: 'spin 3s linear infinite' }}
-        />
-        
-        {/* Core - static glow, no animation */}
-        <div
-          className="w-3 h-3 rounded-full bg-cyan-400"
+        <div 
+          className="w-4 h-4 rounded-full border-2 border-cyan-400"
           style={{
-            boxShadow: '0 0 15px #22d3ee, 0 0 30px rgba(34, 211, 238, 0.5)',
+            boxShadow: '0 0 10px rgba(34, 211, 238, 0.5)',
           }}
         />
       </motion.div>
-
-      {/* Particle effects */}
-      <AnimatePresence>
-        {particles.map((particle) => (
-          <motion.div
-            key={particle.id}
-            className="fixed pointer-events-none z-45 font-mono text-xs"
-            initial={{ 
-              x: particle.x, 
-              y: particle.y, 
-              opacity: particle.type === 'code' ? 0.9 : 0.7,
-              scale: particle.type === 'spark' ? 0.5 : 1,
-            }}
-            animate={{ 
-              opacity: 0,
-              y: particle.y - (particle.type === 'code' ? 60 : 30),
-              x: particle.x + (Math.random() - 0.5) * 30,
-              scale: particle.type === 'spark' ? 0 : 0.5,
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: particle.type === 'spark' ? 0.5 : 1.5, ease: "easeOut" }}
-            style={{
-              color: particle.type === 'code' 
-                ? 'oklch(0.75 0.18 190)' 
-                : particle.type === 'spark'
-                ? 'oklch(0.78 0.15 85)'
-                : 'oklch(0.72 0.19 145)',
-              textShadow: particle.type === 'code' 
-                ? '0 0 15px oklch(0.75 0.18 190 / 0.8)' 
-                : '0 0 10px currentColor',
-            }}
-          >
-            {particle.type === 'code' ? particle.snippet : particle.type === 'spark' ? '✦' : '•'}
-          </motion.div>
-        ))}
-      </AnimatePresence>
     </>
   )
 }
 
 // ============================================
-// ENHANCED STOCK TICKER WITH GLOW
+// LIVE STOCK TICKER WITH REAL MARKET DATA
+// Only shows live data from Finnhub - no defaults
 // ============================================
 export function StockTicker() {
-  const [stocks, setStocks] = useState(stockSymbols)
+  const [stocks, setStocks] = useState<MarketQuote[]>([])
+  const [isLive, setIsLive] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Simulate live price updates - less frequent for performance
+  // Fetch live market data on mount and periodically
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStocks(prev => prev.map(stock => ({
-        ...stock,
-        price: stock.price + (Math.random() - 0.5) * 2,
-        change: stock.change + (Math.random() - 0.5) * 0.5
-      })))
-    }, 3000) // Slower updates
-    return () => clearInterval(interval)
+    let isMounted = true
+    
+    // Initial fetch
+    const fetchData = async () => {
+      try {
+        const liveData = await fetchAllMarketData()
+        if (isMounted && liveData.length > 0) {
+          setStocks(liveData)
+          setIsLive(true)
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.warn('Failed to fetch market data:', error)
+        setIsLoading(false)
+      }
+    }
+    
+    fetchData()
+    
+    // Subscribe to WebSocket updates for real-time data
+    const unsubscribe = marketDataStream.subscribe((quotes) => {
+      if (isMounted && quotes.length > 0) {
+        setStocks(quotes)
+        setIsLive(true)
+        setIsLoading(false)
+      }
+    })
+    
+    // Periodic refresh every 5 minutes (API rate limit friendly)
+    const refreshInterval = setInterval(fetchData, 300000)
+    
+    return () => {
+      isMounted = false
+      unsubscribe()
+      clearInterval(refreshInterval)
+    }
   }, [])
+
+  // Don't render ticker if no data
+  if (stocks.length === 0) {
+    return (
+      <div className="fixed top-0 left-0 right-0 z-30 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-transparent" />
+        <div className="relative border-b border-cyan-500/20 py-2.5">
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+            <span className="text-xs font-mono text-foreground/50">
+              {isLoading ? 'Loading market data...' : 'Market data unavailable'}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed top-0 left-0 right-0 z-30 overflow-hidden">
@@ -270,9 +178,25 @@ export function StockTicker() {
       <div className="relative border-b border-cyan-500/20" style={{
         boxShadow: '0 1px 20px oklch(0.75 0.18 190 / 0.15), 0 1px 40px oklch(0.72 0.19 145 / 0.1)'
       }}>
+        {/* Live indicator */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+          <div 
+            className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500' : 'bg-yellow-500'}`}
+            style={{
+              boxShadow: isLive 
+                ? '0 0 8px oklch(0.72 0.19 145 / 0.8)' 
+                : '0 0 8px oklch(0.80 0.18 85 / 0.8)',
+              animation: isLive ? 'pulse 2s infinite' : 'none'
+            }}
+          />
+          <span className="text-xs font-mono text-foreground/50">
+            {isLive ? 'LIVE' : 'DEMO'}
+          </span>
+        </div>
+        
         {/* CSS-animated ticker - GPU accelerated */}
         <div 
-          className="flex items-center gap-12 py-2.5 whitespace-nowrap will-change-transform"
+          className="flex items-center gap-12 py-2.5 whitespace-nowrap will-change-transform pl-20"
           style={{ 
             width: 'max-content',
             animation: 'ticker 60s linear infinite',
@@ -280,7 +204,7 @@ export function StockTicker() {
         >
           {[...stocks, ...stocks, ...stocks, ...stocks].map((stock, i) => (
             <div 
-              key={i} 
+              key={`${stock.symbol}-${i}`} 
               className="flex items-center gap-3 font-mono text-sm hover:scale-105 transition-transform"
             >
               <span className="text-foreground font-bold tracking-wide">{stock.symbol}</span>
@@ -298,11 +222,15 @@ export function StockTicker() {
             </div>
           ))}
         </div>
-        {/* CSS keyframe for GPU-accelerated ticker */}
+        {/* CSS keyframes for GPU-accelerated ticker */}
         <style>{`
           @keyframes ticker {
             0% { transform: translateX(0); }
             100% { transform: translateX(-25%); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
           }
         `}</style>
       </div>
@@ -442,6 +370,197 @@ export function FloatingOrbs() {
           50% { transform: translate(25px, 35px) scale(1.02); }
         }
       `}</style>
+    </div>
+  )
+}
+
+// ============================================
+// FLOATING MATH EQUATIONS - CSS Animated
+// Quant formulas floating in background
+// ============================================
+export function FloatingMathEquations() {
+  // Pre-calculated positions for consistent layout
+  const equations = [
+    { formula: "Δ = ∂V/∂S", x: 5, y: 15, delay: 0, duration: 25, size: 'lg' },
+    { formula: "Γ = ∂²V/∂S²", x: 88, y: 25, delay: 2, duration: 28, size: 'md' },
+    { formula: "dS = μdt + σdW", x: 12, y: 45, delay: 4, duration: 22, size: 'lg' },
+    { formula: "∇L(θ)", x: 78, y: 55, delay: 1, duration: 30, size: 'md' },
+    { formula: "E[R|Fₜ]", x: 45, y: 68, delay: 3, duration: 26, size: 'md' },
+    { formula: "VaR₀.₉₅", x: 92, y: 78, delay: 5, duration: 24, size: 'sm' },
+    { formula: "C = N(d₁)S - N(d₂)Ke⁻ʳᵗ", x: 8, y: 82, delay: 2, duration: 32, size: 'lg' },
+    { formula: "SR = (R-Rₓ)/σ", x: 70, y: 18, delay: 6, duration: 27, size: 'md' },
+    { formula: "dv = κ(θ-v)dt + ξ√v dW", x: 5, y: 58, delay: 1, duration: 29, size: 'lg' },
+    { formula: "LSTM(hₜ₋₁, xₜ)", x: 82, y: 42, delay: 4, duration: 23, size: 'md' },
+    { formula: "Rᵢ = α + βRₘ + ε", x: 50, y: 32, delay: 3, duration: 31, size: 'md' },
+    { formula: "O(log n)", x: 35, y: 72, delay: 5, duration: 25, size: 'sm' },
+    { formula: "∂L/∂θ", x: 60, y: 88, delay: 2, duration: 26, size: 'sm' },
+    { formula: "P(X>VaR) = α", x: 25, y: 22, delay: 4, duration: 28, size: 'md' },
+  ]
+
+  const sizeClasses = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base',
+  }
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-5 overflow-hidden">
+      {equations.map((eq, i) => (
+        <div
+          key={i}
+          className={`absolute font-mono text-cyan-400 ${sizeClasses[eq.size as keyof typeof sizeClasses]} whitespace-nowrap will-change-transform`}
+          style={{
+            left: `${eq.x}%`,
+            top: `${eq.y}%`,
+            animation: `floatEquation${i % 3} ${eq.duration}s ease-in-out infinite`,
+            animationDelay: `${eq.delay}s`,
+            textShadow: '0 0 15px rgba(34, 211, 238, 0.6), 0 0 30px rgba(34, 211, 238, 0.3)',
+            opacity: 0.35,
+          }}
+        >
+          {eq.formula}
+        </div>
+      ))}
+      <style>{`
+        @keyframes floatEquation0 {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-20px) translateX(15px); }
+        }
+        @keyframes floatEquation1 {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-15px) translateX(-10px); }
+        }
+        @keyframes floatEquation2 {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-25px) translateX(5px); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// ============================================
+// ANIMATED MATH GRAPH - Live drawing chart
+// Shows a smooth animated sine/trading wave
+// ============================================
+export function AnimatedMathGraph() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    // Set canvas size
+    const resize = () => {
+      canvas.width = 300
+      canvas.height = 150
+    }
+    resize()
+    
+    let animationId: number
+    let time = 0
+    
+    const draw = () => {
+      time += 0.02
+      
+      // Clear with fade effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      
+      // Draw grid
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.1)'
+      ctx.lineWidth = 0.5
+      for (let x = 0; x < canvas.width; x += 30) {
+        ctx.beginPath()
+        ctx.moveTo(x, 0)
+        ctx.lineTo(x, canvas.height)
+        ctx.stroke()
+      }
+      for (let y = 0; y < canvas.height; y += 30) {
+        ctx.beginPath()
+        ctx.moveTo(0, y)
+        ctx.lineTo(canvas.width, y)
+        ctx.stroke()
+      }
+      
+      // Draw main wave (combination of sine waves - like a stock chart)
+      ctx.beginPath()
+      ctx.strokeStyle = '#22d3ee'
+      ctx.lineWidth = 2
+      ctx.shadowColor = '#22d3ee'
+      ctx.shadowBlur = 10
+      
+      for (let x = 0; x < canvas.width; x++) {
+        const y = canvas.height / 2 + 
+          Math.sin((x * 0.02) + time) * 30 +
+          Math.sin((x * 0.05) + time * 1.5) * 15 +
+          Math.sin((x * 0.01) + time * 0.5) * 20
+        
+        if (x === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
+      ctx.stroke()
+      ctx.shadowBlur = 0
+      
+      // Draw secondary wave (volatility)
+      ctx.beginPath()
+      ctx.strokeStyle = 'rgba(74, 222, 128, 0.5)'
+      ctx.lineWidth = 1
+      
+      for (let x = 0; x < canvas.width; x++) {
+        const baseY = canvas.height / 2 + 
+          Math.sin((x * 0.02) + time) * 30 +
+          Math.sin((x * 0.05) + time * 1.5) * 15 +
+          Math.sin((x * 0.01) + time * 0.5) * 20
+        const volatility = Math.sin((x * 0.1) + time * 2) * 10
+        const y = baseY + volatility
+        
+        if (x === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
+      ctx.stroke()
+      
+      // Draw axis labels
+      ctx.fillStyle = 'rgba(34, 211, 238, 0.6)'
+      ctx.font = '10px monospace'
+      ctx.fillText('P(t)', 5, 15)
+      ctx.fillText('t→', canvas.width - 20, canvas.height - 5)
+      
+      animationId = requestAnimationFrame(draw)
+    }
+    
+    animationId = requestAnimationFrame(draw)
+    
+    return () => cancelAnimationFrame(animationId)
+  }, [])
+  
+  return (
+    <div 
+      className="fixed top-1/2 -translate-y-1/2 right-4 pointer-events-none z-10 opacity-40"
+      style={{
+        filter: 'drop-shadow(0 0 20px rgba(34, 211, 238, 0.3))',
+      }}
+    >
+      <div className="bg-black/40 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2">
+        <div className="text-xs font-mono text-cyan-400/60 mb-1 flex items-center gap-2">
+          <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+          f(t) = Σ sin(ωₙt + φₙ)
+        </div>
+        <canvas 
+          ref={canvasRef} 
+          className="rounded"
+          style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+        />
+      </div>
     </div>
   )
 }
@@ -1134,7 +1253,7 @@ export function ParticleConstellationNetwork() {
     
     // Create particles
     const particles: { x: number; y: number; vx: number; vy: number; baseX: number; baseY: number; size: number }[] = []
-    const numParticles = 80
+    const numParticles = 40 // Reduced for performance
     
     for (let i = 0; i < numParticles; i++) {
       const x = Math.random() * canvas.width
@@ -1151,7 +1270,7 @@ export function ParticleConstellationNetwork() {
     
     let animationId: number
     let lastTime = 0
-    const fps = 30
+    const fps = 20 // Reduced for performance
     const interval = 1000 / fps
     
     const draw = (time: number) => {
@@ -1453,6 +1572,7 @@ export default function InteractiveEffects() {
       {/* BACKGROUND LAYER (z-0) - Subtle, behind content */}
       <GridLines />
       <FloatingOrbs />
+      <FloatingMathEquations />
       
       {/* PROFILE-SPECIFIC WIDGETS - Fade on scroll */}
       <div style={{ opacity: scrollOpacity, transition: 'opacity 0.2s ease-out' }}>
@@ -1461,6 +1581,7 @@ export default function InteractiveEffects() {
         <LiveGreeksCalculator />
         <TechStackOrbit />
         <MLTradingSignals />
+        <AnimatedMathGraph />
       </div>
       
       {/* Achievement badges - always visible at bottom */}
@@ -2061,9 +2182,9 @@ export function DataFlowStreams() {
     resize()
     window.addEventListener('resize', resize)
     
-    // Create flowing particles
+    // Create flowing particles - reduced for performance
     const streams: { x: number; y: number; speed: number; size: number; hue: number }[] = []
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 25; i++) {
       streams.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -2075,7 +2196,7 @@ export function DataFlowStreams() {
     
     let animationId: number
     let lastTime = 0
-    const fps = 30
+    const fps = 20 // Reduced for performance
     const interval = 1000 / fps
     
     const draw = (time: number) => {
