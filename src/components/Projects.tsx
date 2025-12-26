@@ -36,7 +36,7 @@ const projects: Project[] = [
     technologies: ["Python", "NumPy", "SciPy", "Pandas", "Matplotlib"],
     category: "quant",
     icon: ChartLine,
-    githubUrl: "https://github.com/SH-Ahmed17/heston-option-pricing-engine",
+    githubUrl: "https://github.com/buraq-hs51/heston-option-pricing-engine",
     visualization: HestonVisualization
   },
   {
@@ -52,7 +52,7 @@ const projects: Project[] = [
     technologies: ["Python", "Pandas", "NumPy", "hmmlearn", "yfinance"],
     category: "quant",
     icon: ChartLine,
-    githubUrl: "https://github.com/SH-Ahmed17/regime-allocation-strategy",
+    githubUrl: "https://github.com/buraq-hs51/regime-allocation-strategy",
     visualization: RegimeVisualization
   },
   {
@@ -68,7 +68,7 @@ const projects: Project[] = [
     technologies: ["TensorFlow", "Python", "Keras", "Pandas", "NumPy"],
     category: "ml",
     icon: Brain,
-    githubUrl: "https://github.com/SH-Ahmed17/deep-learning-trading-signals",
+    githubUrl: "https://github.com/buraq-hs51/deep-learning-trading-signals",
     visualization: MLPerformanceVisualization
   },
   {
@@ -84,7 +84,7 @@ const projects: Project[] = [
     technologies: ["Python", "TensorFlow", "Hugging Face", "NLTK", "spaCy"],
     category: "ml",
     icon: Brain,
-    githubUrl: "https://github.com/SH-Ahmed17/financial-sentiment-nlp"
+    githubUrl: "https://github.com/buraq-hs51/financial-sentiment-nlp"
   },
   {
     id: "data-pipeline",
@@ -99,7 +99,7 @@ const projects: Project[] = [
     technologies: ["Apache Spark", "Kafka", "AWS EMR", "Python", "Parquet"],
     category: "data",
     icon: Database,
-    githubUrl: "https://github.com/SH-Ahmed17/market-data-pipeline"
+    githubUrl: "https://github.com/buraq-hs51/market-data-pipeline"
   },
   {
     id: "fx-volatility",
@@ -114,7 +114,7 @@ const projects: Project[] = [
     technologies: ["Python", "Pandas", "NumPy", "Matplotlib", "SciPy"],
     category: "quant",
     icon: ChartLine,
-    githubUrl: "https://github.com/SH-Ahmed17/FX-Volatility-Project",
+    githubUrl: "https://github.com/buraq-hs51/FX-Volatility-Project",
     visualization: VolatilitySurfaceVisualization
   },
   {
@@ -130,7 +130,7 @@ const projects: Project[] = [
     technologies: ["Python", "Pandas", "NumPy", "scikit-learn", "statsmodels"],
     category: "quant",
     icon: ChartLine,
-    githubUrl: "https://github.com/SH-Ahmed17/alpha-signals-regression",
+    githubUrl: "https://github.com/buraq-hs51/alpha-signals-regression",
     visualization: AlphaSignalsVisualization
   },
   {
@@ -146,7 +146,7 @@ const projects: Project[] = [
     technologies: ["Python", "FastAPI", "Docker", "scikit-learn", "Redis"],
     category: "ml",
     icon: Brain,
-    githubUrl: "https://github.com/SH-Ahmed17/ML-Microservice-API"
+    githubUrl: "https://github.com/buraq-hs51/ML-Microservice-API"
   }
 ]
 

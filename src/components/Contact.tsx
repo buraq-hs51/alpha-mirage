@@ -63,7 +63,7 @@ export function Contact() {
                   </a>
 
                   <a
-                    href="https://github.com/SH-Ahmed17"
+                    href="https://github.com/buraq-hs51"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group relative"

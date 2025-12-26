@@ -2,7 +2,7 @@
 
 > Interactive portfolio website for Quantitative Developers & Financial Engineers
 
-[![Deploy to GitHub Pages](https://github.com/SH-Ahmed17/alpha-mirage/actions/workflows/deploy.yml/badge.svg)](https://github.com/SH-Ahmed17/alpha-mirage/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/buraq-hs51/alpha-mirage/actions/workflows/deploy.yml/badge.svg)](https://github.com/buraq-hs51/alpha-mirage/actions/workflows/deploy.yml)
 
 ## ✨ Features
 
@@ -39,4 +39,4 @@ MIT License
 
 ---
 
-**Built by Shadaab Ahmed** • [LinkedIn](https://www.linkedin.com/in/shadaabah) • [GitHub](https://github.com/SH-Ahmed17)
+**Built by Shadaab Ahmed** • [LinkedIn](https://www.linkedin.com/in/shadaabah) • [GitHub](https://github.com/buraq-hs51)

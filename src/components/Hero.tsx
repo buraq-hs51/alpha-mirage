@@ -299,7 +299,7 @@ export function Hero() {
             <LinkedinLogo size={28} weight="fill" className="relative z-10 group-hover:text-[#0077B5] transition-colors" />
           </motion.a>
           <motion.a 
-            href="https://github.com/SH-Ahmed17" 
+            href="https://github.com/buraq-hs51" 
             target="_blank" 
             rel="noopener noreferrer"
             className="relative p-4 rounded-full bg-muted/30 text-muted-foreground transition-all duration-300 group"
