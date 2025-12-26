@@ -582,6 +582,334 @@ export function AlgoStatusWidget() {
 }
 
 // ============================================
+// ORDER BOOK DEPTH VISUALIZATION - Bloomberg-style
+// ============================================
+export function OrderBookDepth() {
+  const [orderBook, setOrderBook] = useState({
+    bids: [
+      { price: 189.45, size: 2500 },
+      { price: 189.44, size: 1800 },
+      { price: 189.43, size: 3200 },
+      { price: 189.42, size: 1500 },
+      { price: 189.41, size: 4200 },
+    ],
+    asks: [
+      { price: 189.46, size: 2100 },
+      { price: 189.47, size: 1600 },
+      { price: 189.48, size: 2800 },
+      { price: 189.49, size: 1900 },
+      { price: 189.50, size: 3500 },
+    ],
+  })
+
+  // Simulate order book updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOrderBook(prev => ({
+        bids: prev.bids.map(order => ({
+          ...order,
+          size: Math.max(500, order.size + Math.floor((Math.random() - 0.5) * 800))
+        })),
+        asks: prev.asks.map(order => ({
+          ...order,
+          size: Math.max(500, order.size + Math.floor((Math.random() - 0.5) * 800))
+        })),
+      }))
+    }, 500)
+    return () => clearInterval(interval)
+  }, [])
+
+  const maxSize = Math.max(
+    ...orderBook.bids.map(o => o.size),
+    ...orderBook.asks.map(o => o.size)
+  )
+
+  return (
+    <div className="fixed bottom-20 left-4 z-20 pointer-events-none">
+      <div className="bg-background/80 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-3 font-mono text-[10px] w-44">
+        <div className="text-cyan-400 font-bold mb-2 text-xs">ORDER BOOK</div>
+        
+        {/* Asks (sells) - reversed to show highest at top */}
+        <div className="space-y-0.5 mb-1">
+          {[...orderBook.asks].reverse().map((order, i) => (
+            <div key={`ask-${i}`} className="relative flex justify-between">
+              <div 
+                className="absolute right-0 top-0 bottom-0 bg-red-500/20"
+                style={{ width: `${(order.size / maxSize) * 100}%` }}
+              />
+              <span className="relative text-red-400">{order.price.toFixed(2)}</span>
+              <span className="relative text-foreground/50">{order.size.toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+        
+        {/* Spread */}
+        <div className="border-t border-b border-cyan-500/30 py-1 my-1 text-center">
+          <span className="text-cyan-400">Spread: </span>
+          <span className="text-foreground/70">$0.01</span>
+        </div>
+        
+        {/* Bids (buys) */}
+        <div className="space-y-0.5">
+          {orderBook.bids.map((order, i) => (
+            <div key={`bid-${i}`} className="relative flex justify-between">
+              <div 
+                className="absolute left-0 top-0 bottom-0 bg-green-500/20"
+                style={{ width: `${(order.size / maxSize) * 100}%` }}
+              />
+              <span className="relative text-green-400">{order.price.toFixed(2)}</span>
+              <span className="relative text-foreground/50">{order.size.toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// BROWNIAN MOTION PARTICLES - Stochastic Process
+// ============================================
+export function BrownianMotion() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    const width = 200
+    const height = 120
+    canvas.width = width
+    canvas.height = height
+    
+    // Particles following GBM: dS = μSdt + σSdW
+    const particles: Array<{ x: number; y: number; vx: number; vy: number }> = []
+    for (let i = 0; i < 15; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: 0,
+        vy: 0,
+      })
+    }
+    
+    let animationId: number
+    let lastTime = 0
+    const fps = 30
+    const frameInterval = 1000 / fps
+    
+    const draw = (timestamp: number) => {
+      animationId = requestAnimationFrame(draw)
+      
+      if (timestamp - lastTime < frameInterval) return
+      lastTime = timestamp
+      
+      // Clear with fade effect
+      ctx.fillStyle = 'rgba(10, 15, 26, 0.15)'
+      ctx.fillRect(0, 0, width, height)
+      
+      // Update and draw particles with Brownian motion
+      const dt = 0.1
+      const mu = 0.05  // drift
+      const sigma = 2  // volatility
+      
+      particles.forEach((p, i) => {
+        // Wiener process increment
+        const dW = (Math.random() - 0.5) * 2
+        
+        // GBM update
+        p.vx = mu * dt + sigma * dW * Math.sqrt(dt)
+        p.vy = mu * dt + sigma * (Math.random() - 0.5) * 2 * Math.sqrt(dt)
+        
+        p.x += p.vx * 10
+        p.y += p.vy * 10
+        
+        // Boundary reflection
+        if (p.x < 0 || p.x > width) p.vx *= -1
+        if (p.y < 0 || p.y > height) p.vy *= -1
+        p.x = Math.max(0, Math.min(width, p.x))
+        p.y = Math.max(0, Math.min(height, p.y))
+        
+        // Draw particle with glow
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 8)
+        gradient.addColorStop(0, `rgba(34, 211, 238, 0.8)`)
+        gradient.addColorStop(1, 'rgba(34, 211, 238, 0)')
+        
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2)
+        ctx.fillStyle = gradient
+        ctx.fill()
+        
+        // Draw core
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2)
+        ctx.fillStyle = '#22d3ee'
+        ctx.fill()
+        
+        // Draw connections to nearby particles
+        particles.forEach((p2, j) => {
+          if (i >= j) return
+          const dist = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2)
+          if (dist < 50) {
+            ctx.beginPath()
+            ctx.moveTo(p.x, p.y)
+            ctx.lineTo(p2.x, p2.y)
+            ctx.strokeStyle = `rgba(34, 211, 238, ${0.3 * (1 - dist / 50)})`
+            ctx.lineWidth = 0.5
+            ctx.stroke()
+          }
+        })
+      })
+    }
+    
+    animationId = requestAnimationFrame(draw)
+    
+    return () => cancelAnimationFrame(animationId)
+  }, [])
+  
+  return (
+    <div className="fixed top-40 right-4 z-20 pointer-events-none">
+      <div className="bg-background/60 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2">
+        <div className="text-cyan-400 font-mono text-[10px] mb-1">dS = μdt + σdW</div>
+        <canvas ref={canvasRef} className="rounded" style={{ width: 200, height: 120 }} />
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// CORRELATION MATRIX HEATMAP
+// ============================================
+export function CorrelationMatrix() {
+  const assets = ['SPY', 'QQQ', 'BTC', 'GLD', 'VIX']
+  const [correlations, setCorrelations] = useState<number[][]>([
+    [1.00, 0.92, 0.35, 0.12, -0.75],
+    [0.92, 1.00, 0.40, 0.08, -0.80],
+    [0.35, 0.40, 1.00, 0.15, -0.25],
+    [0.12, 0.08, 0.15, 1.00, 0.05],
+    [-0.75, -0.80, -0.25, 0.05, 1.00],
+  ])
+
+  // Slightly update correlations periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCorrelations(prev => 
+        prev.map((row, i) => 
+          row.map((val, j) => {
+            if (i === j) return 1
+            const newVal = val + (Math.random() - 0.5) * 0.05
+            return Math.max(-1, Math.min(1, newVal))
+          })
+        )
+      )
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const getColor = (val: number) => {
+    if (val >= 0.7) return 'bg-green-500'
+    if (val >= 0.3) return 'bg-green-500/60'
+    if (val >= 0) return 'bg-green-500/30'
+    if (val >= -0.3) return 'bg-red-500/30'
+    if (val >= -0.7) return 'bg-red-500/60'
+    return 'bg-red-500'
+  }
+
+  return (
+    <div className="fixed top-64 left-4 z-20 pointer-events-none hidden lg:block">
+      <div className="bg-background/80 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2">
+        <div className="text-cyan-400 font-mono text-[10px] mb-2 font-bold">CORRELATION ρ</div>
+        
+        {/* Header row */}
+        <div className="flex gap-0.5 mb-0.5">
+          <div className="w-7" />
+          {assets.map(a => (
+            <div key={a} className="w-7 text-[8px] text-foreground/50 text-center">{a}</div>
+          ))}
+        </div>
+        
+        {/* Matrix */}
+        {correlations.map((row, i) => (
+          <div key={i} className="flex gap-0.5 mb-0.5">
+            <div className="w-7 text-[8px] text-foreground/50 flex items-center">{assets[i]}</div>
+            {row.map((val, j) => (
+              <div 
+                key={j} 
+                className={`w-7 h-7 rounded-sm flex items-center justify-center text-[8px] font-mono transition-all duration-500 ${getColor(val)}`}
+                style={{ opacity: Math.abs(val) * 0.8 + 0.2 }}
+              >
+                {val.toFixed(1)}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// LIVE CODE TERMINAL
+// ============================================
+export function CodeTerminal() {
+  const codeLines = [
+    { text: '>>> model = LSTM(hidden_size=256)', color: 'text-cyan-400' },
+    { text: '>>> optimizer = Adam(lr=0.001)', color: 'text-cyan-400' },
+    { text: '>>> for epoch in range(100):', color: 'text-purple-400' },
+    { text: '...     loss = train_step(batch)', color: 'text-foreground/70' },
+    { text: '...     if loss < best_loss:', color: 'text-foreground/70' },
+    { text: '...         save_model(model)', color: 'text-foreground/70' },
+    { text: 'Training: ████████░░ 80%', color: 'text-green-400' },
+    { text: 'Loss: 0.0023 | Sharpe: 2.41', color: 'text-yellow-400' },
+    { text: '>>> backtest(strategy="momentum")', color: 'text-cyan-400' },
+    { text: 'Returns: +24.7% | MaxDD: -8.2%', color: 'text-green-400' },
+  ]
+  
+  const [visibleLines, setVisibleLines] = useState(0)
+  const [cursorVisible, setCursorVisible] = useState(true)
+
+  useEffect(() => {
+    const lineInterval = setInterval(() => {
+      setVisibleLines(prev => (prev + 1) % (codeLines.length + 3))
+    }, 800)
+    
+    const cursorInterval = setInterval(() => {
+      setCursorVisible(prev => !prev)
+    }, 500)
+    
+    return () => {
+      clearInterval(lineInterval)
+      clearInterval(cursorInterval)
+    }
+  }, [])
+
+  return (
+    <div className="fixed bottom-4 left-4 z-20 pointer-events-none hidden md:block">
+      <div className="bg-background/90 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-2 w-64 font-mono text-[10px]">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex gap-1">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+          </div>
+          <span className="text-foreground/50">quant_strategy.py</span>
+        </div>
+        
+        <div className="space-y-0.5 h-28 overflow-hidden">
+          {codeLines.slice(0, visibleLines).map((line, i) => (
+            <div key={i} className={line.color}>{line.text}</div>
+          ))}
+          {cursorVisible && <span className="text-cyan-400">█</span>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
 // ANIMATED GRID LINES
 // ============================================
 export function GridLines() {
@@ -727,6 +1055,10 @@ export default function InteractiveEffects() {
       <MatrixRain />
       <NeuralNetworkViz />
       <AlgoStatusWidget />
+      <OrderBookDepth />
+      <BrownianMotion />
+      <CorrelationMatrix />
+      <CodeTerminal />
       <StockTicker />
       <InteractiveCursor />
     </>
