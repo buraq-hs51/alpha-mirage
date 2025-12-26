@@ -1,22 +1,34 @@
 import { useEffect, useState, useRef, useCallback, memo } from "react"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 
-// Quant formulas and code snippets
+// Quant/ML formulas and code snippets - enhanced
 const codeSnippets = [
-  "μ = E[R]",
-  "σ² = Var(R)",
+  // Options Greeks
   "Δ = ∂V/∂S",
   "Γ = ∂²V/∂S²",
-  "ρ = Corr(X,Y)",
-  "VaR₀.₉₅",
-  "α + βRₘ",
-  "N(d₁)",
-  "e^{-rT}",
-  "∫σdW",
-  "PnL++",
-  "λ = 0.94",
   "θ = -∂V/∂t",
+  "ν = ∂V/∂σ",
+  // ML/Stats
+  "∇L(θ)",
+  "SGD++",
+  "LSTM(h,c)",
+  "softmax(z)",
+  "ReLU(x)",
+  "∂L/∂w",
+  // Quant Finance
+  "α + βRₘ",
+  "VaR₀.₉₅",
+  "E[R|F]",
+  "dS = μdt + σdW",
+  "N(d₁)",
+  "PnL++",
+  "Sharpe > 2",
   "κ(θ-v)",
+  // HFT/Low Latency
+  "O(log n)",
+  "latency < 1μs",
+  "L2 cache hit",
+  "FPGA",
 ]
 
 // Stock data
@@ -435,6 +447,141 @@ export function FloatingOrbs() {
 }
 
 // ============================================
+// NEURAL NETWORK VISUALIZATION - CSS only
+// ============================================
+export function NeuralNetworkViz() {
+  // Node positions for a simple 3-layer network visualization
+  const layers = [
+    [{ id: 1, y: 20 }, { id: 2, y: 40 }, { id: 3, y: 60 }, { id: 4, y: 80 }], // Input
+    [{ id: 5, y: 25 }, { id: 6, y: 50 }, { id: 7, y: 75 }], // Hidden
+    [{ id: 8, y: 35 }, { id: 9, y: 65 }], // Output
+  ]
+
+  return (
+    <div className="fixed bottom-20 right-8 w-48 h-32 pointer-events-none z-10 opacity-30">
+      <svg width="100%" height="100%" viewBox="0 0 200 100">
+        {/* Connections - draw lines between layers */}
+        {layers[0].map(n1 => 
+          layers[1].map(n2 => (
+            <line
+              key={`${n1.id}-${n2.id}`}
+              x1="30" y1={n1.y}
+              x2="100" y2={n2.y}
+              stroke="#22d3ee"
+              strokeWidth="0.5"
+              opacity="0.3"
+              className="neural-pulse"
+              style={{ animationDelay: `${(n1.id + n2.id) * 0.1}s` }}
+            />
+          ))
+        )}
+        {layers[1].map(n1 => 
+          layers[2].map(n2 => (
+            <line
+              key={`${n1.id}-${n2.id}`}
+              x1="100" y1={n1.y}
+              x2="170" y2={n2.y}
+              stroke="#4ade80"
+              strokeWidth="0.5"
+              opacity="0.3"
+              className="neural-pulse"
+              style={{ animationDelay: `${(n1.id + n2.id) * 0.1 + 0.5}s` }}
+            />
+          ))
+        )}
+        
+        {/* Nodes */}
+        {layers[0].map(n => (
+          <circle key={n.id} cx="30" cy={n.y} r="4" fill="#22d3ee" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+        ))}
+        {layers[1].map(n => (
+          <circle key={n.id} cx="100" cy={n.y} r="5" fill="#a78bfa" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+        ))}
+        {layers[2].map(n => (
+          <circle key={n.id} cx="170" cy={n.y} r="4" fill="#4ade80" className="neural-node" style={{ animationDelay: `${n.id * 0.2}s` }} />
+        ))}
+      </svg>
+      
+      <style>{`
+        .neural-node {
+          animation: nodePulse 2s ease-in-out infinite;
+        }
+        .neural-pulse {
+          animation: linePulse 3s ease-in-out infinite;
+        }
+        @keyframes nodePulse {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        @keyframes linePulse {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 0.6; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// ============================================
+// ALGORITHM STATUS WIDGET
+// ============================================
+export function AlgoStatusWidget() {
+  const [metrics, setMetrics] = useState({
+    sharpe: 2.34,
+    pnl: 12847.50,
+    trades: 1247,
+    latency: 0.8,
+  })
+
+  // Update metrics periodically - slow interval for performance
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics(prev => ({
+        sharpe: Math.max(0.5, prev.sharpe + (Math.random() - 0.5) * 0.1),
+        pnl: prev.pnl + (Math.random() - 0.45) * 100,
+        trades: prev.trades + Math.floor(Math.random() * 3),
+        latency: Math.max(0.1, Math.min(2, prev.latency + (Math.random() - 0.5) * 0.2)),
+      }))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const pnlColor = metrics.pnl >= 0 ? 'text-green-400' : 'text-red-400'
+
+  return (
+    <div className="fixed top-16 right-4 z-20 pointer-events-none">
+      <div className="bg-background/80 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-3 font-mono text-xs">
+        {/* Status header */}
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-cyan-400 font-bold">ALGO RUNNING</span>
+        </div>
+        
+        {/* Metrics */}
+        <div className="space-y-1 text-foreground/70">
+          <div className="flex justify-between gap-4">
+            <span>Sharpe:</span>
+            <span className="text-cyan-400">{metrics.sharpe.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>PnL:</span>
+            <span className={pnlColor}>${metrics.pnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>Trades:</span>
+            <span>{metrics.trades.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span>Latency:</span>
+            <span className={metrics.latency < 1 ? 'text-green-400' : 'text-yellow-400'}>{metrics.latency.toFixed(1)}ms</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
 // ANIMATED GRID LINES
 // ============================================
 export function GridLines() {
@@ -578,6 +725,8 @@ export default function InteractiveEffects() {
       <FloatingOrbs />
       <GridLines />
       <MatrixRain />
+      <NeuralNetworkViz />
+      <AlgoStatusWidget />
       <StockTicker />
       <InteractiveCursor />
     </>
