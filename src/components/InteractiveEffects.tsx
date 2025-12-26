@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, memo } from "react"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 
 // Quant formulas and code snippets
@@ -46,72 +46,81 @@ export function InteractiveCursor() {
   }>>([])
   const lastPos = useRef({ x: 0, y: 0 })
   const particleId = useRef(0)
+  const throttleRef = useRef(0)
 
   const cursorX = useMotionValue(0)
   const cursorY = useMotionValue(0)
   
-  const springConfig = { stiffness: 300, damping: 25, mass: 0.5 }
+  // Optimized spring config - stiffer = faster response
+  const springConfig = { stiffness: 500, damping: 30 }
   const springX = useSpring(cursorX, springConfig)
   const springY = useSpring(cursorY, springConfig)
 
-  // Smooth trailing cursor positions
-  const trail1X = useSpring(cursorX, { stiffness: 150, damping: 20 })
-  const trail1Y = useSpring(cursorY, { stiffness: 150, damping: 20 })
-  const trail2X = useSpring(cursorX, { stiffness: 80, damping: 18 })
-  const trail2Y = useSpring(cursorY, { stiffness: 80, damping: 18 })
-  const trail3X = useSpring(cursorX, { stiffness: 40, damping: 15 })
-  const trail3Y = useSpring(cursorY, { stiffness: 40, damping: 15 })
+  // Reduced to 2 trail positions (from 3)
+  const trail1X = useSpring(cursorX, { stiffness: 150, damping: 22 })
+  const trail1Y = useSpring(cursorY, { stiffness: 150, damping: 22 })
+  const trail2X = useSpring(cursorX, { stiffness: 60, damping: 18 })
+  const trail2Y = useSpring(cursorY, { stiffness: 60, damping: 18 })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now()
+      // Throttle particle creation to 60fps max
+      const shouldSpawnParticle = now - throttleRef.current > 16
+      
       const newX = e.clientX
       const newY = e.clientY
-      
-      // Calculate velocity
-      const vx = newX - lastPos.current.x
-      const vy = newY - lastPos.current.y
-      const speed = Math.sqrt(vx * vx + vy * vy)
       
       cursorX.set(newX)
       cursorY.set(newY)
       
-      // Spawn particles based on speed
-      if (speed > 5) {
-        const numParticles = Math.min(Math.floor(speed / 10), 3)
-        const newParticles: Array<{
-          id: number
-          x: number
-          y: number
-          snippet?: string
-          type: 'glow' | 'spark' | 'code'
-        }> = []
+      if (shouldSpawnParticle) {
+        // Calculate velocity
+        const vx = newX - lastPos.current.x
+        const vy = newY - lastPos.current.y
+        const speed = Math.sqrt(vx * vx + vy * vy)
         
-        for (let i = 0; i < numParticles; i++) {
-          const type: 'glow' | 'spark' | 'code' = Math.random() > 0.7 ? 'code' : (Math.random() > 0.5 ? 'spark' : 'glow')
-          newParticles.push({
-            id: particleId.current++,
-            x: newX + (Math.random() - 0.5) * 40,
-            y: newY + (Math.random() - 0.5) * 40,
-            snippet: type === 'code' ? codeSnippets[Math.floor(Math.random() * codeSnippets.length)] : undefined,
-            type
-          })
+        // Spawn particles based on speed - max 2 particles
+        if (speed > 8) {
+          const numParticles = Math.min(Math.floor(speed / 15), 2)
+          const newParticles: Array<{
+            id: number
+            x: number
+            y: number
+            snippet?: string
+            type: 'glow' | 'spark' | 'code'
+          }> = []
+          
+          for (let i = 0; i < numParticles; i++) {
+            const type: 'glow' | 'spark' | 'code' = Math.random() > 0.7 ? 'code' : (Math.random() > 0.5 ? 'spark' : 'glow')
+            newParticles.push({
+              id: particleId.current++,
+              x: newX + (Math.random() - 0.5) * 40,
+              y: newY + (Math.random() - 0.5) * 40,
+              snippet: type === 'code' ? codeSnippets[Math.floor(Math.random() * codeSnippets.length)] : undefined,
+              type
+            })
+          }
+          
+          // Limit to 12 particles max (from 20)
+          setParticles(prev => [...prev.slice(-10), ...newParticles])
+          throttleRef.current = now
         }
         
-        setParticles(prev => [...prev.slice(-20), ...newParticles])
+        lastPos.current = { x: newX, y: newY }
       }
-      
-      lastPos.current = { x: newX, y: newY }
     }
 
-    window.addEventListener("mousemove", handleMouseMove)
+    // Passive listener for better scroll performance
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [cursorX, cursorY])
 
-  // Cleanup old particles
+  // Cleanup old particles - less frequent
   useEffect(() => {
     const interval = setInterval(() => {
-      setParticles(prev => prev.slice(-15))
-    }, 1000)
+      setParticles(prev => prev.slice(-8))
+    }, 1500)
     return () => clearInterval(interval)
   }, [])
 
@@ -120,28 +129,9 @@ export function InteractiveCursor() {
 
   return (
     <>
-      {/* Ambient glow that follows cursor loosely */}
+      {/* Ambient glow - simplified, using trail2 instead of trail3 */}
       <motion.div
-        className="fixed pointer-events-none z-40"
-        style={{
-          x: trail3X,
-          y: trail3Y,
-          translateX: "-50%",
-          translateY: "-50%",
-        }}
-      >
-        <div 
-          className="w-[500px] h-[500px] rounded-full"
-          style={{
-            background: 'radial-gradient(circle, oklch(0.7 0.15 190 / 0.08) 0%, oklch(0.6 0.2 280 / 0.03) 40%, transparent 70%)',
-            filter: 'blur(40px)',
-          }}
-        />
-      </motion.div>
-
-      {/* Secondary glow ring */}
-      <motion.div
-        className="fixed pointer-events-none z-40"
+        className="fixed pointer-events-none z-40 will-change-transform"
         style={{
           x: trail2X,
           y: trail2Y,
@@ -149,26 +139,18 @@ export function InteractiveCursor() {
           translateY: "-50%",
         }}
       >
-        <motion.div 
-          className="w-[200px] h-[200px] rounded-full"
+        <div 
+          className="w-[400px] h-[400px] rounded-full"
           style={{
-            background: 'radial-gradient(circle, oklch(0.75 0.18 190 / 0.15) 0%, oklch(0.72 0.19 145 / 0.05) 50%, transparent 70%)',
-            filter: 'blur(20px)',
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
+            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%)',
+            filter: 'blur(40px)',
           }}
         />
       </motion.div>
 
-      {/* Inner glow trail */}
+      {/* Secondary glow ring - removed expensive animation */}
       <motion.div
-        className="fixed pointer-events-none z-40"
+        className="fixed pointer-events-none z-40 will-change-transform"
         style={{
           x: trail1X,
           y: trail1Y,
@@ -177,17 +159,17 @@ export function InteractiveCursor() {
         }}
       >
         <div 
-          className="w-[80px] h-[80px] rounded-full"
+          className="w-[150px] h-[150px] rounded-full"
           style={{
-            background: 'radial-gradient(circle, oklch(0.8 0.2 190 / 0.3) 0%, oklch(0.75 0.18 190 / 0.1) 50%, transparent 70%)',
-            filter: 'blur(8px)',
+            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, transparent 70%)',
+            filter: 'blur(15px)',
           }}
         />
       </motion.div>
 
       {/* Main cursor core */}
       <motion.div
-        className="fixed pointer-events-none z-50"
+        className="fixed pointer-events-none z-50 will-change-transform"
         style={{
           x: springX,
           y: springY,
@@ -195,32 +177,17 @@ export function InteractiveCursor() {
           translateY: "-50%",
         }}
       >
-        {/* Rotating ring */}
-        <motion.div
+        {/* Rotating ring - CSS animation instead of framer */}
+        <div
           className="absolute w-8 h-8 -left-4 -top-4 rounded-full border border-cyan-400/40"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          style={{ animation: 'spin 3s linear infinite' }}
         />
         
-        {/* Pulsing core */}
-        <motion.div
-          className="w-3 h-3 rounded-full"
+        {/* Core - static glow, no animation */}
+        <div
+          className="w-3 h-3 rounded-full bg-cyan-400"
           style={{
-            background: 'linear-gradient(135deg, oklch(0.85 0.2 190) 0%, oklch(0.75 0.18 170) 100%)',
-            boxShadow: `
-              0 0 10px oklch(0.8 0.2 190 / 0.8),
-              0 0 20px oklch(0.75 0.18 190 / 0.6),
-              0 0 40px oklch(0.7 0.15 190 / 0.4),
-              0 0 60px oklch(0.65 0.12 190 / 0.2)
-            `,
-          }}
-          animate={{
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: "easeInOut",
+            boxShadow: '0 0 15px #22d3ee, 0 0 30px rgba(34, 211, 238, 0.5)',
           }}
         />
       </motion.div>
@@ -269,9 +236,8 @@ export function InteractiveCursor() {
 // ============================================
 export function StockTicker() {
   const [stocks, setStocks] = useState(stockSymbols)
-  const [offset, setOffset] = useState(0)
 
-  // Simulate live price updates
+  // Simulate live price updates - less frequent for performance
   useEffect(() => {
     const interval = setInterval(() => {
       setStocks(prev => prev.map(stock => ({
@@ -279,14 +245,7 @@ export function StockTicker() {
         price: stock.price + (Math.random() - 0.5) * 2,
         change: stock.change + (Math.random() - 0.5) * 0.5
       })))
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOffset(prev => prev + 1)
-    }, 30)
+    }, 3000) // Slower updates
     return () => clearInterval(interval)
   }, [])
 
@@ -299,32 +258,41 @@ export function StockTicker() {
       <div className="relative border-b border-cyan-500/20" style={{
         boxShadow: '0 1px 20px oklch(0.75 0.18 190 / 0.15), 0 1px 40px oklch(0.72 0.19 145 / 0.1)'
       }}>
+        {/* CSS-animated ticker - GPU accelerated */}
         <div 
-          className="flex items-center gap-12 py-2.5 whitespace-nowrap"
-          style={{ transform: `translateX(-${offset % (stocks.length * 180)}px)` }}
+          className="flex items-center gap-12 py-2.5 whitespace-nowrap will-change-transform"
+          style={{ 
+            width: 'max-content',
+            animation: 'ticker 60s linear infinite',
+          }}
         >
           {[...stocks, ...stocks, ...stocks, ...stocks].map((stock, i) => (
-            <motion.div 
+            <div 
               key={i} 
-              className="flex items-center gap-3 font-mono text-sm"
-              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-3 font-mono text-sm hover:scale-105 transition-transform"
             >
               <span className="text-foreground font-bold tracking-wide">{stock.symbol}</span>
               <span className="text-foreground/70">${stock.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              <motion.span 
+              <span 
                 className={`flex items-center gap-1 font-semibold ${stock.change >= 0 ? "text-green-400" : "text-red-400"}`}
-                animate={{ 
+                style={{
                   textShadow: stock.change >= 0 
-                    ? ['0 0 5px oklch(0.72 0.19 145 / 0.5)', '0 0 15px oklch(0.72 0.19 145 / 0.8)', '0 0 5px oklch(0.72 0.19 145 / 0.5)']
-                    : ['0 0 5px oklch(0.65 0.20 25 / 0.5)', '0 0 15px oklch(0.65 0.20 25 / 0.8)', '0 0 5px oklch(0.65 0.20 25 / 0.5)']
+                    ? '0 0 10px oklch(0.72 0.19 145 / 0.6)'
+                    : '0 0 10px oklch(0.65 0.20 25 / 0.6)'
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
               >
                 {stock.change >= 0 ? "▲" : "▼"} {Math.abs(stock.change).toFixed(2)}%
-              </motion.span>
-            </motion.div>
+              </span>
+            </div>
           ))}
         </div>
+        {/* CSS keyframe for GPU-accelerated ticker */}
+        <style>{`
+          @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-25%); }
+          }
+        `}</style>
       </div>
     </div>
   )
@@ -340,43 +308,57 @@ export function MatrixRain() {
     const canvas = canvasRef.current
     if (!canvas) return
     
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
+    
+    let animationId: number
+    let lastTime = 0
+    const targetFPS = 20 // 20fps is plenty for background effect
+    const frameInterval = 1000 / targetFPS
     
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
     }
     resize()
-    window.addEventListener('resize', resize)
+    
+    // Debounced resize handler
+    let resizeTimeout: ReturnType<typeof setTimeout>
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(resize, 150)
+    }
+    window.addEventListener('resize', handleResize)
     
     const chars = "01∑∏∫∂∇αβγδεμσρφψ+-×÷=<>≈∞√ΔΓΘΛ".split("")
     const fontSize = 14
-    const columns = Math.floor(canvas.width / fontSize)
+    const columns = Math.floor(canvas.width / (fontSize * 1.5)) // Fewer columns
     const drops: number[] = Array(columns).fill(1)
     const speeds: number[] = Array(columns).fill(0).map(() => Math.random() * 0.5 + 0.5)
     const brightness: number[] = Array(columns).fill(0).map(() => Math.random() * 0.5 + 0.3)
     
-    const draw = () => {
+    const draw = (timestamp: number) => {
+      animationId = requestAnimationFrame(draw)
+      
+      // Throttle to target FPS
+      if (timestamp - lastTime < frameInterval) return
+      lastTime = timestamp
+      
       // Semi-transparent black to create trail effect
-      ctx.fillStyle = 'rgba(10, 15, 26, 0.05)'
+      ctx.fillStyle = 'rgba(10, 15, 26, 0.08)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
+      
+      ctx.font = `${fontSize}px monospace`
       
       for (let i = 0; i < drops.length; i++) {
         const char = chars[Math.floor(Math.random() * chars.length)]
-        const x = i * fontSize
+        const x = i * fontSize * 1.5
         const y = drops[i] * fontSize
         
-        // Vary the color between cyan and green with glow
-        const hue = 170 + Math.random() * 30 // cyan to teal range
+        // Simplified color - no expensive shadowBlur
         const alpha = brightness[i]
-        
-        ctx.font = `${fontSize}px JetBrains Mono, monospace`
-        ctx.fillStyle = `oklch(0.7 0.15 ${hue} / ${alpha})`
-        ctx.shadowColor = `oklch(0.7 0.18 ${hue} / 0.5)`
-        ctx.shadowBlur = 10
+        ctx.fillStyle = `rgba(34, 211, 238, ${alpha})` // cyan color
         ctx.fillText(char, x, y)
-        ctx.shadowBlur = 0
         
         // Reset drop randomly
         if (y > canvas.height && Math.random() > 0.975) {
@@ -388,11 +370,12 @@ export function MatrixRain() {
       }
     }
     
-    const interval = setInterval(draw, 50)
+    animationId = requestAnimationFrame(draw)
     
     return () => {
-      clearInterval(interval)
-      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationId)
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(resizeTimeout)
     }
   }, [])
   
@@ -408,41 +391,45 @@ export function MatrixRain() {
 // FLOATING ORBS WITH GLOW
 // ============================================
 export function FloatingOrbs() {
-  const orbs = [
-    { size: 400, x: '10%', y: '20%', color: '190', duration: 20, delay: 0 },
-    { size: 300, x: '80%', y: '60%', color: '145', duration: 25, delay: 5 },
-    { size: 350, x: '50%', y: '80%', color: '280', duration: 22, delay: 2 },
-    { size: 250, x: '20%', y: '70%', color: '85', duration: 18, delay: 8 },
-    { size: 200, x: '70%', y: '15%', color: '200', duration: 30, delay: 3 },
+  // Orb config - reduced to 3 orbs
+  const orbsConfig = [
+    { size: 400, x: '10%', y: '20%', color: '#22d3ee', animName: 'float1' },
+    { size: 300, x: '80%', y: '60%', color: '#4ade80', animName: 'float2' },
+    { size: 350, x: '50%', y: '80%', color: '#a78bfa', animName: 'float3' },
   ]
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {orbs.map((orb, i) => (
-        <motion.div
+      {orbsConfig.map((orb, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
+          className="absolute rounded-full will-change-transform"
           style={{
             width: orb.size,
             height: orb.size,
             left: orb.x,
             top: orb.y,
-            background: `radial-gradient(circle, oklch(0.5 0.15 ${orb.color} / 0.15) 0%, oklch(0.4 0.1 ${orb.color} / 0.05) 40%, transparent 70%)`,
+            background: `radial-gradient(circle, ${orb.color}20 0%, transparent 70%)`,
             filter: 'blur(60px)',
-          }}
-          animate={{
-            x: [0, 50, -30, 0],
-            y: [0, -40, 30, 0],
-            scale: [1, 1.1, 0.95, 1],
-          }}
-          transition={{
-            duration: orb.duration,
-            delay: orb.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
+            animation: `${orb.animName} ${20 + i * 5}s ease-in-out infinite`,
           }}
         />
       ))}
+      {/* CSS keyframes for GPU-accelerated orb animations */}
+      <style>{`
+        @keyframes float1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(40px, -30px) scale(1.05); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-30px, 25px) scale(0.95); }
+        }
+        @keyframes float3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(25px, 35px) scale(1.02); }
+        }
+      `}</style>
     </div>
   )
 }
@@ -456,7 +443,7 @@ export function GridLines() {
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="oklch(0.75 0.18 190)" strokeWidth="0.5"/>
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#22d3ee" strokeWidth="0.5"/>
           </pattern>
           <linearGradient id="gridFade" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="white" stopOpacity="0.3"/>
@@ -470,18 +457,17 @@ export function GridLines() {
         <rect width="100%" height="100%" fill="url(#grid)" mask="url(#gridMask)"/>
       </svg>
       
-      {/* Scanning line effect */}
-      <motion.div
-        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"
-        animate={{
-          top: ['-10%', '110%'],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+      {/* Scanning line effect - CSS animation */}
+      <div
+        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent will-change-transform"
+        style={{ animation: 'scanLine 10s linear infinite' }}
       />
+      <style>{`
+        @keyframes scanLine {
+          0% { top: -10%; }
+          100% { top: 110%; }
+        }
+      `}</style>
     </div>
   )
 }
@@ -501,9 +487,10 @@ export function CandlestickAnimation() {
   const generateCandles = useCallback(() => {
     const newCandles: typeof candles = []
     let lastClose = 50 + Math.random() * 20
-    for (let i = 0; i < 50; i++) {
+    // Reduced from 50 to 30 candles
+    for (let i = 0; i < 30; i++) {
       const volatility = 2 + Math.random() * 4
-      const change = (Math.random() - 0.48) * volatility // slight upward bias
+      const change = (Math.random() - 0.48) * volatility
       const open = lastClose
       const close = Math.max(10, Math.min(90, open + change))
       const high = Math.max(open, close) + Math.random() * 2
@@ -516,9 +503,10 @@ export function CandlestickAnimation() {
 
   useEffect(() => {
     setCandles(generateCandles())
+    // Less frequent updates
     const interval = setInterval(() => {
       setCandles(generateCandles())
-    }, 4000)
+    }, 6000)
     return () => clearInterval(interval)
   }, [generateCandles])
 
@@ -527,31 +515,16 @@ export function CandlestickAnimation() {
       {/* Gradient fade */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent z-10" />
       
-      <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 100" className="opacity-30">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        
+      {/* Removed expensive glow filter, using simple opacity */}
+      <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 100" className="opacity-25">
         {candles.map((candle, i) => {
           const x = (i / candles.length) * 1000
-          const width = 16
+          const width = 20
           const isGreen = candle.close >= candle.open
-          const color = isGreen ? "oklch(0.72 0.19 145)" : "oklch(0.65 0.20 25)"
+          const color = isGreen ? "#4ade80" : "#f87171"
           
           return (
-            <motion.g 
-              key={candle.id}
-              filter="url(#glow)"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.02, duration: 0.4, ease: "easeOut" }}
-            >
+            <g key={candle.id} className="candlestick-appear" style={{ animationDelay: `${i * 20}ms` }}>
               {/* Wick */}
               <line
                 x1={x + width / 2}
@@ -570,10 +543,20 @@ export function CandlestickAnimation() {
                 fill={color}
                 rx="1"
               />
-            </motion.g>
+            </g>
           )
         })}
       </svg>
+      <style>{`
+        .candlestick-appear {
+          animation: candleAppear 0.4s ease-out forwards;
+          opacity: 0;
+        }
+        @keyframes candleAppear {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
