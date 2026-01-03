@@ -1,0 +1,114 @@
+{
+  "format": "layers-model",
+  "generatedBy": "keras v2.15.0",
+  "convertedBy": "TensorFlow.js Converter v4.17.0",
+  "modelTopology": {
+    "keras_version": "2.15.0",
+    "backend": "tensorflow",
+    "model_config": {
+      "class_name": "Sequential",
+      "config": {
+        "name": "alpha_engine_catboost",
+        "layers": [
+          {
+            "class_name": "InputLayer",
+            "config": {
+              "batch_input_shape": [null, 22],
+              "dtype": "float32",
+              "sparse": false,
+              "name": "features"
+            }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "units": 64,
+              "activation": "relu",
+              "use_bias": true,
+              "kernel_initializer": { "class_name": "GlorotUniform" },
+              "name": "hidden_0"
+            }
+          },
+          {
+            "class_name": "BatchNormalization",
+            "config": { "name": "bn_0" }
+          },
+          {
+            "class_name": "Dropout",
+            "config": { "rate": 0.2, "name": "dropout_0" }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "units": 32,
+              "activation": "relu",
+              "use_bias": true,
+              "name": "hidden_1"
+            }
+          },
+          {
+            "class_name": "BatchNormalization",
+            "config": { "name": "bn_1" }
+          },
+          {
+            "class_name": "Dropout",
+            "config": { "rate": 0.2, "name": "dropout_1" }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "units": 16,
+              "activation": "relu",
+              "use_bias": true,
+              "name": "hidden_2"
+            }
+          },
+          {
+            "class_name": "BatchNormalization",
+            "config": { "name": "bn_2" }
+          },
+          {
+            "class_name": "Dropout",
+            "config": { "rate": 0.2, "name": "dropout_2" }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "units": 1,
+              "activation": "sigmoid",
+              "use_bias": true,
+              "name": "prediction"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": ["model.weights.bin"],
+      "weights": [
+        { "name": "hidden_0/kernel", "shape": [22, 64], "dtype": "float32" },
+        { "name": "hidden_0/bias", "shape": [64], "dtype": "float32" },
+        { "name": "bn_0/gamma", "shape": [64], "dtype": "float32" },
+        { "name": "bn_0/beta", "shape": [64], "dtype": "float32" },
+        { "name": "bn_0/moving_mean", "shape": [64], "dtype": "float32" },
+        { "name": "bn_0/moving_variance", "shape": [64], "dtype": "float32" },
+        { "name": "hidden_1/kernel", "shape": [64, 32], "dtype": "float32" },
+        { "name": "hidden_1/bias", "shape": [32], "dtype": "float32" },
+        { "name": "bn_1/gamma", "shape": [32], "dtype": "float32" },
+        { "name": "bn_1/beta", "shape": [32], "dtype": "float32" },
+        { "name": "bn_1/moving_mean", "shape": [32], "dtype": "float32" },
+        { "name": "bn_1/moving_variance", "shape": [32], "dtype": "float32" },
+        { "name": "hidden_2/kernel", "shape": [32, 16], "dtype": "float32" },
+        { "name": "hidden_2/bias", "shape": [16], "dtype": "float32" },
+        { "name": "bn_2/gamma", "shape": [16], "dtype": "float32" },
+        { "name": "bn_2/beta", "shape": [16], "dtype": "float32" },
+        { "name": "bn_2/moving_mean", "shape": [16], "dtype": "float32" },
+        { "name": "bn_2/moving_variance", "shape": [16], "dtype": "float32" },
+        { "name": "prediction/kernel", "shape": [16, 1], "dtype": "float32" },
+        { "name": "prediction/bias", "shape": [1], "dtype": "float32" }
+      ]
+    }
+  ]
+}

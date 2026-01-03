@@ -1,0 +1,219 @@
+{
+  "version": "20260103",
+  "timestamp": "2026-01-03T00:00:00.000Z",
+  "environment": "development",
+  "models": {
+    "lightgbm": {
+      "name": "LightGBM",
+      "type": "classifier",
+      "framework": "tfjs",
+      "files": {
+        "model": "lightgbm/model.json",
+        "weights": "lightgbm/model.weights.bin"
+      },
+      "metrics": {
+        "accuracy": 0.683,
+        "precision": 0.691,
+        "recall": 0.672,
+        "f1": 0.681,
+        "sharpe_ratio": 1.42,
+        "profit_factor": 1.38,
+        "win_rate": 0.544,
+        "max_drawdown": 0.127,
+        "sortino_ratio": 1.89
+      },
+      "inputShape": [22],
+      "outputShape": [1],
+      "featureNames": [
+        "rsi_14",
+        "rsi_7",
+        "macd",
+        "macd_signal",
+        "macd_histogram",
+        "bb_upper_ratio",
+        "bb_lower_ratio",
+        "bb_width",
+        "bb_position",
+        "atr_14",
+        "atr_ratio",
+        "sma_5_20_cross",
+        "sma_20_50_cross",
+        "ema_12_26_cross",
+        "returns_1d",
+        "returns_5d",
+        "momentum_10",
+        "momentum_20",
+        "roc_10",
+        "volatility_20",
+        "volume_sma_ratio",
+        "obv_change"
+      ]
+    },
+    "xgboost": {
+      "name": "XGBoost",
+      "type": "classifier",
+      "framework": "tfjs",
+      "files": {
+        "model": "xgboost/model.json",
+        "weights": "xgboost/model.weights.bin"
+      },
+      "metrics": {
+        "accuracy": 0.671,
+        "precision": 0.678,
+        "recall": 0.663,
+        "f1": 0.670,
+        "sharpe_ratio": 1.35,
+        "profit_factor": 1.32,
+        "win_rate": 0.538,
+        "max_drawdown": 0.142,
+        "sortino_ratio": 1.78
+      },
+      "inputShape": [22],
+      "outputShape": [1],
+      "featureNames": [
+        "rsi_14",
+        "rsi_7",
+        "macd",
+        "macd_signal",
+        "macd_histogram",
+        "bb_upper_ratio",
+        "bb_lower_ratio",
+        "bb_width",
+        "bb_position",
+        "atr_14",
+        "atr_ratio",
+        "sma_5_20_cross",
+        "sma_20_50_cross",
+        "ema_12_26_cross",
+        "returns_1d",
+        "returns_5d",
+        "momentum_10",
+        "momentum_20",
+        "roc_10",
+        "volatility_20",
+        "volume_sma_ratio",
+        "obv_change"
+      ]
+    },
+    "catboost": {
+      "name": "CatBoost",
+      "type": "classifier",
+      "framework": "tfjs",
+      "files": {
+        "model": "catboost/model.json",
+        "weights": "catboost/model.weights.bin"
+      },
+      "metrics": {
+        "accuracy": 0.678,
+        "precision": 0.685,
+        "recall": 0.668,
+        "f1": 0.676,
+        "sharpe_ratio": 1.39,
+        "profit_factor": 1.36,
+        "win_rate": 0.541,
+        "max_drawdown": 0.131,
+        "sortino_ratio": 1.85
+      },
+      "inputShape": [22],
+      "outputShape": [1],
+      "featureNames": [
+        "rsi_14",
+        "rsi_7",
+        "macd",
+        "macd_signal",
+        "macd_histogram",
+        "bb_upper_ratio",
+        "bb_lower_ratio",
+        "bb_width",
+        "bb_position",
+        "atr_14",
+        "atr_ratio",
+        "sma_5_20_cross",
+        "sma_20_50_cross",
+        "ema_12_26_cross",
+        "returns_1d",
+        "returns_5d",
+        "momentum_10",
+        "momentum_20",
+        "roc_10",
+        "volatility_20",
+        "volume_sma_ratio",
+        "obv_change"
+      ]
+    },
+    "randomforest": {
+      "name": "Random Forest",
+      "type": "classifier",
+      "framework": "tfjs",
+      "files": {
+        "model": "randomforest/model.json",
+        "weights": "randomforest/model.weights.bin"
+      },
+      "metrics": {
+        "accuracy": 0.662,
+        "precision": 0.669,
+        "recall": 0.654,
+        "f1": 0.661,
+        "sharpe_ratio": 1.28,
+        "profit_factor": 1.29,
+        "win_rate": 0.532,
+        "max_drawdown": 0.149,
+        "sortino_ratio": 1.68
+      },
+      "inputShape": [22],
+      "outputShape": [1],
+      "featureNames": [
+        "rsi_14",
+        "rsi_7",
+        "macd",
+        "macd_signal",
+        "macd_histogram",
+        "bb_upper_ratio",
+        "bb_lower_ratio",
+        "bb_width",
+        "bb_position",
+        "atr_14",
+        "atr_ratio",
+        "sma_5_20_cross",
+        "sma_20_50_cross",
+        "ema_12_26_cross",
+        "returns_1d",
+        "returns_5d",
+        "momentum_10",
+        "momentum_20",
+        "roc_10",
+        "volatility_20",
+        "volume_sma_ratio",
+        "obv_change"
+      ]
+    },
+    "ensemble": {
+      "name": "Ensemble",
+      "description": "4-Model Weighted Average (LightGBM 30%, XGBoost 25%, CatBoost 25%, Random Forest 20%)",
+      "weights": {
+        "lightgbm": 0.30,
+        "xgboost": 0.25,
+        "catboost": 0.25,
+        "randomforest": 0.20
+      },
+      "metrics": {
+        "accuracy": 0.695,
+        "precision": 0.702,
+        "recall": 0.687,
+        "f1": 0.694,
+        "sharpe_ratio": 1.58,
+        "profit_factor": 1.49,
+        "win_rate": 0.558,
+        "max_drawdown": 0.112,
+        "sortino_ratio": 2.08
+      },
+      "model_count": 4
+    }
+  },
+  "trainingInfo": {
+    "samples": 15420,
+    "features": 22,
+    "testSamples": 3085,
+    "dataRange": "5 years"
+  }
+}
