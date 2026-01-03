@@ -1,7 +1,6 @@
 {
   "version": "20260104",
   "timestamp": "2026-01-04T02:21:26.027979",
-  "environment": "production",
   "models": {
     "lightgbm": {
       "name": "LightGBM",
@@ -375,11 +374,5 @@
         "sortino_ratio": 0.28736283173084237
       }
     }
-  },
-  "trainingInfo": {
-    "samples": 158419,
-    "features": 55,
-    "testSamples": 39605,
-    "dataRange": "20 years"
   }
 }
