@@ -1,6 +1,6 @@
 {
   "version": "20260104",
-  "timestamp": "2026-01-04T02:21:26.027979",
+  "timestamp": "2026-01-04T00:30:48.291366",
   "models": {
     "lightgbm": {
       "name": "LightGBM",
@@ -11,20 +11,20 @@
         "weights": "lightgbm/model.weights.bin"
       },
       "metrics": {
-        "accuracy": 0.5194041156419644,
-        "precision": 0.5277234636871508,
-        "recall": 0.7329066045970323,
-        "f1_score": 0.613616986724047,
-        "roc_auc": 0.5153252993775272,
-        "sharpe_ratio": 0.3001741411282993,
-        "max_drawdown": -0.999824734723104,
-        "win_rate": 0.5204660587639311,
-        "profit_factor": 1.0641880005222246,
-        "total_trades": 39480,
-        "avg_return": 0.0005277894249629577,
-        "volatility": 0.44308591710871603,
-        "calmar_ratio": 0.13302624997320134,
-        "sortino_ratio": 0.36524890699803186
+        "accuracy": 0.5208496221005994,
+        "precision": 0.5298653610771114,
+        "recall": 0.7210793703672858,
+        "f1_score": 0.6108582918827389,
+        "roc_auc": 0.5194749877520757,
+        "sharpe_ratio": 0.26765077667575227,
+        "max_drawdown": -0.9983255518077688,
+        "win_rate": 0.5222624394923903,
+        "profit_factor": 1.056962319639681,
+        "total_trades": 22931,
+        "avg_return": 0.0004852837838877434,
+        "volatility": 0.4569069988650919,
+        "calmar_ratio": 0.1224966277966799,
+        "sortino_ratio": 0.3268642508775127
       },
       "inputShape": [
         55
@@ -99,20 +99,20 @@
         "weights": "xgboost/model.weights.bin"
       },
       "metrics": {
-        "accuracy": 0.5101881075621765,
-        "precision": 0.5257658113175747,
-        "recall": 0.6050819513141306,
-        "f1_score": 0.5626423176642994,
-        "roc_auc": 0.5090550152185587,
-        "sharpe_ratio": 0.22838178358132497,
-        "max_drawdown": -0.9988870835266558,
-        "win_rate": 0.5108409321175279,
-        "profit_factor": 1.048467949218898,
-        "total_trades": 39480,
-        "avg_return": 0.0004015887672776351,
-        "volatility": 0.44311926899100756,
-        "calmar_ratio": 0.10131312239684544,
-        "sortino_ratio": 0.27928371475477093
+        "accuracy": 0.5126400833984884,
+        "precision": 0.5285786912629821,
+        "recall": 0.6061464145914883,
+        "f1_score": 0.5647113594040968,
+        "roc_auc": 0.5122106748064688,
+        "sharpe_ratio": 0.1774033851610793,
+        "max_drawdown": -0.9984862906664294,
+        "win_rate": 0.513322576424927,
+        "profit_factor": 1.037399476056127,
+        "total_trades": 22931,
+        "avg_return": 0.0003216797902229361,
+        "volatility": 0.4569434048902541,
+        "calmar_ratio": 0.08118619944403545,
+        "sortino_ratio": 0.22190219747409254
       },
       "inputShape": [
         55
@@ -187,20 +187,20 @@
         "weights": "catboost/model.weights.bin"
       },
       "metrics": {
-        "accuracy": 0.5215503093043807,
-        "precision": 0.5272218425591461,
-        "recall": 0.7856173019105809,
-        "f1_score": 0.6309906330938054,
-        "roc_auc": 0.5183794538756847,
-        "sharpe_ratio": 0.14322242673707536,
-        "max_drawdown": -0.9999992007042201,
-        "win_rate": 0.5229229989868288,
-        "profit_factor": 1.030124861106495,
-        "total_trades": 39480,
-        "avg_return": 0.0002518595305021142,
-        "volatility": 0.44314708879838016,
-        "calmar_ratio": 0.06346865241675881,
-        "sortino_ratio": 0.16687342064251676
+        "accuracy": 0.5247154895317523,
+        "precision": 0.5280780384919589,
+        "recall": 0.8340967768801533,
+        "f1_score": 0.6467131602737957,
+        "roc_auc": 0.5203587323342667,
+        "sharpe_ratio": 0.09351748652765315,
+        "max_drawdown": -0.9999991822546233,
+        "win_rate": 0.526448911953251,
+        "profit_factor": 1.0195430774861598,
+        "total_trades": 22931,
+        "avg_return": 0.00016957986363237755,
+        "volatility": 0.45696400826885186,
+        "calmar_ratio": 0.04273416058102139,
+        "sortino_ratio": 0.11142571786701191
       },
       "inputShape": [
         55
@@ -275,20 +275,20 @@
         "weights": "randomforest/model.weights.bin"
       },
       "metrics": {
-        "accuracy": 0.51180406514329,
-        "precision": 0.5304183408177736,
-        "recall": 0.5441276306856755,
-        "f1_score": 0.5371855327093855,
-        "roc_auc": 0.5160088722171228,
-        "sharpe_ratio": 0.14435281725996577,
-        "max_drawdown": -0.9999999632733704,
-        "win_rate": 0.5124620060790274,
-        "profit_factor": 1.0303662132418736,
-        "total_trades": 39480,
-        "avg_return": 0.0002538471813562514,
-        "volatility": 0.44314680299878983,
-        "calmar_ratio": 0.06396949205115919,
-        "sortino_ratio": 0.17686169929685663
+        "accuracy": 0.5125097732603596,
+        "precision": 0.528696925329429,
+        "recall": 0.6014824685600066,
+        "f1_score": 0.5627459383644369,
+        "roc_auc": 0.5145197303388729,
+        "sharpe_ratio": 0.20070237958114293,
+        "max_drawdown": -0.999980494342256,
+        "win_rate": 0.5135406218655968,
+        "profit_factor": 1.042414688517632,
+        "total_trades": 22931,
+        "avg_return": 0.00036392073909196303,
+        "volatility": 0.45693541912138846,
+        "calmar_ratio": 0.09170981511144002,
+        "sortino_ratio": 0.2505174862074841
       },
       "inputShape": [
         55
@@ -358,20 +358,20 @@
       "name": "Ensemble",
       "description": "4-model weighted average (LightGBM 30%, XGBoost 25%, CatBoost 25%, RandomForest 20%)",
       "metrics": {
-        "accuracy": 0.516020704456508,
-        "precision": 0.5277671682835536,
-        "recall": 0.670061099796334,
-        "f1_score": 0.5904623536449876,
-        "roc_auc": 0.5142392179521982,
-        "sharpe_ratio": 0.2381589038870726,
-        "max_drawdown": -0.9994712627393163,
-        "win_rate": 0.5168946301925025,
-        "profit_factor": 1.0505949041522449,
-        "total_trades": 39480,
-        "avg_return": 0.0004187771621586421,
-        "volatility": 0.4431152594485912,
-        "calmar_ratio": 0.1055876730009623,
-        "sortino_ratio": 0.28736283173084237
+        "accuracy": 0.5172009382329945,
+        "precision": 0.5279343605160967,
+        "recall": 0.7020071624885483,
+        "f1_score": 0.6026525578236156,
+        "roc_auc": 0.5185822417631174,
+        "sharpe_ratio": 0.2633013766945618,
+        "max_drawdown": -0.9983021993425188,
+        "win_rate": 0.518555667001003,
+        "profit_factor": 1.056011006494866,
+        "total_trades": 22931,
+        "avg_return": 0.0004773999734943726,
+        "volatility": 0.4569090918281124,
+        "calmar_ratio": 0.12050939424937114,
+        "sortino_ratio": 0.3294772968746913
       }
     }
   }
