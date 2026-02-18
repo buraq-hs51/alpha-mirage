@@ -1,0 +1,37 @@
+{
+  "version": "20260217",
+  "timestamp": "2026-02-17T21:16:19.293255",
+  "numClasses": 3,
+  "classLabels": [
+    "SHORT",
+    "HOLD",
+    "LONG"
+  ],
+  "models": {
+    "sgd": {
+      "file": "online/sgd_weights.json",
+      "metrics": {
+        "accuracy": 0.4095238095238095,
+        "precision": 0.4158278415197602,
+        "recall": 0.4095238095238095,
+        "f1_score": 0.3780385435700587,
+        "roc_auc": 0.5997052190190341,
+        "samples_trained": 92398,
+        "num_classes": 3
+      }
+    },
+    "passiveAggressive": {
+      "file": "online/pa_weights.json",
+      "metrics": {
+        "accuracy": 0.3761471861471862,
+        "precision": 0.37275207588117254,
+        "recall": 0.3761471861471862,
+        "f1_score": 0.3719250365712876,
+        "roc_auc": 0.5423019897915289,
+        "samples_trained": 92398,
+        "num_classes": 3
+      }
+    }
+  },
+  "featureCount": 71
+}

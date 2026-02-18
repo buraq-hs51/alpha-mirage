@@ -1,0 +1,199 @@
+{
+  "version": "20260217",
+  "timestamp": "2026-02-17T21:16:19.314796",
+  "maxVintages": 4,
+  "vintages": [
+    {
+      "version": "202602172116",
+      "trainedAt": "2026-02-17T21:16:19.314777",
+      "modelName": "randomforest",
+      "path": "vintages/randomforest/202602172116",
+      "metrics": {
+        "sharpeRatio": 0.06095708443309123,
+        "accuracy": 0.43277056277056275,
+        "winRate": 0.527189705271897,
+        "maxDrawdown": -0.7496475946809862
+      }
+    },
+    {
+      "version": "202602172116",
+      "trainedAt": "2026-02-17T21:16:19.311173",
+      "modelName": "catboost",
+      "path": "vintages/catboost/202602172116",
+      "metrics": {
+        "sharpeRatio": 0.3001808730460039,
+        "accuracy": 0.44545454545454544,
+        "winRate": 0.5281470350248526,
+        "maxDrawdown": -0.554936717831578
+      }
+    },
+    {
+      "version": "202602172116",
+      "trainedAt": "2026-02-17T21:16:19.307668",
+      "modelName": "xgboost",
+      "path": "vintages/xgboost/202602172116",
+      "metrics": {
+        "sharpeRatio": 0.007779962107539068,
+        "accuracy": 0.4383116883116883,
+        "winRate": 0.5115011202389843,
+        "maxDrawdown": -0.6898498715163125
+      }
+    },
+    {
+      "version": "202602172116",
+      "trainedAt": "2026-02-17T21:16:19.303612",
+      "modelName": "lightgbm",
+      "path": "vintages/lightgbm/202602172116",
+      "metrics": {
+        "sharpeRatio": 0.14080613128004918,
+        "accuracy": 0.43476190476190474,
+        "winRate": 0.5108545034642032,
+        "maxDrawdown": -0.7671712402315
+      }
+    },
+    {
+      "version": "202601202110",
+      "trainedAt": "2026-01-20T21:10:16.126904",
+      "modelName": "randomforest",
+      "path": "vintages/randomforest/202601202110",
+      "metrics": {
+        "sharpeRatio": 0.11683088770610066,
+        "accuracy": 0.43000303674460977,
+        "winRate": 0.5289221806075739,
+        "maxDrawdown": -0.7896976399604085
+      }
+    },
+    {
+      "version": "202601202110",
+      "trainedAt": "2026-01-20T21:10:16.123523",
+      "modelName": "catboost",
+      "path": "vintages/catboost/202601202110",
+      "metrics": {
+        "sharpeRatio": 0.2838735973078459,
+        "accuracy": 0.44449264673983774,
+        "winRate": 0.5271777830524567,
+        "maxDrawdown": -0.531994930573385
+      }
+    },
+    {
+      "version": "202601202110",
+      "trainedAt": "2026-01-20T21:10:16.120700",
+      "modelName": "xgboost",
+      "path": "vintages/xgboost/202601202110",
+      "metrics": {
+        "sharpeRatio": 0.15645150906294975,
+        "accuracy": 0.4397206194959004,
+        "winRate": 0.5098841172460804,
+        "maxDrawdown": -0.5489029191324437
+      }
+    },
+    {
+      "version": "202601202110",
+      "trainedAt": "2026-01-20T21:10:16.117546",
+      "modelName": "lightgbm",
+      "path": "vintages/lightgbm/202601202110",
+      "metrics": {
+        "sharpeRatio": 0.11104497464008686,
+        "accuracy": 0.43551255910806475,
+        "winRate": 0.5103705016840986,
+        "maxDrawdown": -0.7519003682466426
+      }
+    },
+    {
+      "version": "202601182108",
+      "trainedAt": "2026-01-18T21:08:19.046676",
+      "modelName": "randomforest",
+      "path": "vintages/randomforest/202601182108",
+      "metrics": {
+        "sharpeRatio": 0.1447144496470997,
+        "accuracy": 0.4284102742103436,
+        "winRate": 0.5277056277056277,
+        "maxDrawdown": -0.7780838802012848
+      }
+    },
+    {
+      "version": "202601182108",
+      "trainedAt": "2026-01-18T21:08:19.044569",
+      "modelName": "catboost",
+      "path": "vintages/catboost/202601182108",
+      "metrics": {
+        "sharpeRatio": 0.35310805586443883,
+        "accuracy": 0.446459562651857,
+        "winRate": 0.5264975586518995,
+        "maxDrawdown": -0.5949658924405171
+      }
+    },
+    {
+      "version": "202601182108",
+      "trainedAt": "2026-01-18T21:08:19.041548",
+      "modelName": "xgboost",
+      "path": "vintages/xgboost/202601182108",
+      "metrics": {
+        "sharpeRatio": 0.14341802931812225,
+        "accuracy": 0.4360898993405068,
+        "winRate": 0.5137219324109775,
+        "maxDrawdown": -0.6403975700231839
+      }
+    },
+    {
+      "version": "202601182108",
+      "trainedAt": "2026-01-18T21:08:19.038761",
+      "modelName": "lightgbm",
+      "path": "vintages/lightgbm/202601182108",
+      "metrics": {
+        "sharpeRatio": 0.17697579840971187,
+        "accuracy": 0.4346581048247136,
+        "winRate": 0.5151036178433439,
+        "maxDrawdown": -0.7629009028345827
+      }
+    },
+    {
+      "version": "202601142109",
+      "trainedAt": "2026-01-14T21:09:16.342723",
+      "modelName": "randomforest",
+      "path": "vintages/randomforest/202601142109",
+      "metrics": {
+        "sharpeRatio": 0.15282132918065583,
+        "accuracy": 0.43040610898993403,
+        "winRate": 0.5295116772823779,
+        "maxDrawdown": -0.7706657477000103
+      }
+    },
+    {
+      "version": "202601142109",
+      "trainedAt": "2026-01-14T21:09:16.339528",
+      "modelName": "catboost",
+      "path": "vintages/catboost/202601142109",
+      "metrics": {
+        "sharpeRatio": 0.4196006137373052,
+        "accuracy": 0.44476744186046513,
+        "winRate": 0.5314867156585642,
+        "maxDrawdown": -0.5916504683775884
+      }
+    },
+    {
+      "version": "202601142109",
+      "trainedAt": "2026-01-14T21:09:16.336864",
+      "modelName": "xgboost",
+      "path": "vintages/xgboost/202601142109",
+      "metrics": {
+        "sharpeRatio": 0.20738136617548455,
+        "accuracy": 0.441253037139882,
+        "winRate": 0.5162964659186322,
+        "maxDrawdown": -0.6437017769976802
+      }
+    },
+    {
+      "version": "202601142109",
+      "trainedAt": "2026-01-14T21:09:16.333159",
+      "modelName": "lightgbm",
+      "path": "vintages/lightgbm/202601142109",
+      "metrics": {
+        "sharpeRatio": 0.18038862793820012,
+        "accuracy": 0.4380857341200972,
+        "winRate": 0.5157852670840549,
+        "maxDrawdown": -0.7710291640843364
+      }
+    }
+  ]
+}
